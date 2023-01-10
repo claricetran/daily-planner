@@ -1,4 +1,4 @@
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
+// Wrapped all code that interacts with the DOM in a call to jQuery to ensure that
 // the code isn't run until the browser has finished rendering all the elements
 // in the html.
 $(function () {
@@ -13,21 +13,29 @@ $(function () {
 	// 		</button>
 	//  </div>
 	// This section will write out all of the needed html based off of the bootstrap format. the id and content in the div will be based off the needed hour.
-	for (var i = businessHours[0]; i <= businessHours[1]; i++) {
-		var hour = dayjs().hour(i);
+	for (var h = businessHours[0]; h <= businessHours[1]; h++) {
 		$(".container-lg").append(
 			'<div id="hour-' +
-				i +
+				h +
 				'" class="row time-block"><div class="col-2 col-md-1 hour text-center py-3">' +
-				hour.format("hA") +
+				dayjs().hour(h).format("hA") +
 				'</div><textarea class="col-8 col-md-10 description" rows="3"></textarea><button class="btn saveBtn col-2 col-md-1" aria-label="save"><i class="fas fa-save" aria-hidden="true"></i></button></div>'
 		);
 	}
-	// Listener for click events on save buttons.
+	// Listener for click events on save buttons and brief message of saved event.
 	$(".saveBtn").click(function () {
 		var timeblockEl = $(this).parent();
 		// directly setting the hour-x as the key to grab by using a computed property name
 		localStorage.setItem([timeblockEl.attr("id")], timeblockEl.find("textarea").val());
+		//Inputs a message which indicates the event has been saved above the timeline. Message disappears after 2.5 seconds
+		var saveMessage = $(
+			'<p class="tempMes">Event saved for ' + timeblockEl.find("div").text() + " ✔</p>"
+		);
+		timeblockEl.parent().prepend(saveMessage);
+		// If there's multiple messages they will all be removed 2.5 seconds after the first click.
+		setTimeout(function () {
+			$(".tempMes").remove();
+		}, 2500);
 	});
 
 	// Every second, the site will check the current hour compared to the listed business hours and determine if the event is in the past, present, or future and color code accordingly.
